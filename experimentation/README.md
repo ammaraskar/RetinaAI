@@ -1,7 +1,9 @@
 # Setting up in Anaconda
 
 Doumenting my attempt to use Anaconda to make grabbing the dependencies
-easier. https://anaconda.org/
+easier. https://www.anaconda.com/downloads
+
+Download Python 3.* version of Anaconda for Windows.
 
 1. Set up a virtualenv
 
@@ -16,3 +18,5 @@ easier. https://anaconda.org/
     * `pip install Pillow Click>=6.0`
 
     * `pip install --no-dependencies face_recognition face_recognition_models`
+
+pip install pypiwin32
