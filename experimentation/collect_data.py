@@ -8,6 +8,7 @@ import json
 import glob
 from PIL import Image
 import os
+from threading import Thread
 
 
 def process_image(image, image_id):
@@ -64,7 +65,9 @@ def capture_position_and_image(video_capture, image_id):
     _, frame = video_capture.read()
 
     print("Mouse pos: {}, {}".format(posX, posY))
-    process_image(frame, image_id)
+
+    thread = Thread(target=process_image, args=(frame, image_id))
+    thread.start()
 
 def mouse_click_loop(video_capture, last_image):
     state_left = win32api.GetKeyState(0x01)  # Left button down = 0 or 1. Button up = -127 or -128
