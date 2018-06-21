@@ -45,8 +45,8 @@ def process_image(image, image_id):
     left_eye = pil_im.crop(left_bounds)
     right_eye = pil_im.crop(right_bounds)
 
-    left_eye.save('data/images/{}_left.jpg'.format(image_id))
-    right_eye.save('data/images/{}_right.jpg'.format(image_id))
+    left_eye.save('data/images/{}_left.png'.format(image_id))
+    right_eye.save('data/images/{}_right.png'.format(image_id))
     with open('data/images/{}_meta.json'.format(image_id), 'w') as f:
         json.dump(data, f)
 
@@ -93,7 +93,7 @@ def mouse_click_loop(video_capture, last_image):
 def main():
     pathlib.Path('data/images').mkdir(parents=True, exist_ok=True) 
 
-    images = glob.glob('data/images/*.jpg')
+    images = glob.glob('data/images/*.png')
     if len(images) == 0:
         last_image = 0
     else:
