@@ -13,10 +13,10 @@ Download Python 3.* version of Anaconda for Windows.
 
 2. Install dependencies
 
-    * `conda install --yes -c conda-forge opencv dlib`
+    * `conda install --yes -c conda-forge opencv dlib scipy`
 
-    * `pip install Pillow Click>=6.0`
+    * `pip install Pillow "Click>=6.0" pypiwin32`
+
+    * `pip install --ignore-installed --upgrade tensorflow tflearn`
 
     * `pip install --no-dependencies face_recognition face_recognition_models`
-
-pip install pypiwin32

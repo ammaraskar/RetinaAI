@@ -11,7 +11,7 @@ import os
 from threading import Thread
 
 
-def process_image(image, image_id):
+def process_image(image, image_id, x, y):
     # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
     converted_image = image[:, :, ::-1]
 
@@ -30,7 +30,9 @@ def process_image(image, image_id):
     data = {
         'position': face_locations[0],
         'left': landmarks['left_eye'],
-        'right': landmarks['right_eye']
+        'right': landmarks['right_eye'],
+        'x': x,
+        'y': y
     }
 
     left_bounds = resolve_corners(landmarks['left_eye'])
@@ -66,7 +68,7 @@ def capture_position_and_image(video_capture, image_id):
 
     print("Mouse pos: {}, {}".format(posX, posY))
 
-    thread = Thread(target=process_image, args=(frame, image_id))
+    thread = Thread(target=process_image, args=(frame, image_id, posX, posY))
     thread.start()
 
 def mouse_click_loop(video_capture, last_image):
