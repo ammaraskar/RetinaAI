@@ -58,8 +58,8 @@ img_prep.add_featurewise_stdnorm()
 # Create extra synthetic training data by flipping, rotating and blurring the
 # images on our data set.
 img_aug = ImageAugmentation()
-img_aug.add_random_rotation(max_angle=10.)
-img_aug.add_random_blur(sigma_max=2.)
+img_aug.add_random_rotation(max_angle=15.)
+img_aug.add_random_blur(sigma_max=3.)
 
 # Define our network architecture:
 
@@ -69,16 +69,16 @@ network = input_data(shape=[None, 28, 72, 3],
                      data_augmentation=img_aug)
 
 # Step 1: Convolution
-network = conv_2d(network, 32, 3, activation='relu')
+network = conv_2d(network, 72, 3, activation='relu')
 
 # Step 2: Max pooling
 network = max_pool_2d(network, 2)
 
 # Step 3: Convolution again
-network = conv_2d(network, 64, 3, activation='relu')
+network = conv_2d(network, 128, 3, activation='relu')
 
 # Step 4: Convolution yet again
-network = conv_2d(network, 64, 3, activation='relu')
+# network = conv_2d(network, 128, 3, activation='relu')
 
 # Step 5: Max pooling again
 network = max_pool_2d(network, 2)
@@ -87,7 +87,7 @@ network = max_pool_2d(network, 2)
 network = fully_connected(network, 512, activation='relu')
 
 # Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
-network = dropout(network, 0.8)
+network = dropout(network, 0.85)
 
 # Step 8: Fully-connected neural network with two outputs (0=isn't a bird, 1=is a bird) to make the final prediction
 network = fully_connected(network, 2, activation='softmax')
@@ -101,7 +101,7 @@ network = regression(network, optimizer='adam',
 model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='checkpoints/eye_position.tfl.ckpt')
 
 # Train it! We'll do 100 training passes and monitor it as it goes.
-model.fit(X, Y, n_epoch=100, shuffle=True, validation_set=(X_test, Y_test),
+model.fit(X, Y, n_epoch=200, shuffle=True, validation_set=(X_test, Y_test),
           show_metric=True, batch_size=50,
           snapshot_epoch=True,
           run_id='eye-classifier')
