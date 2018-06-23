@@ -11,44 +11,7 @@ import json
 import os
 from PIL import Image
 import numpy as np
-
-X = []
-Y = []
-
-def generate_label(meta):
-    if int(meta['x']) < (1920 / 2):
-        return [1, 0]
-    else:
-        return [0, 1]
-
-# Load in the data
-images = glob.glob('data/images/*.json')
-for image in images:
-    image_id = os.path.basename(image).split('_')[0]
-    with open('data/images/{}_meta.json'.format(image_id), 'r') as f:
-        image_meta = json.load(f)
-
-    left_eye = Image.open('data/images/{}_left.png'.format(image_id)).resize((36, 14))
-    right_eye = Image.open('data/images/{}_right.png'.format(image_id)).resize((36, 14))
-
-    combined = Image.new('RGB', (72, 28))
-    combined.paste(left_eye, (0, 0))
-    combined.paste(right_eye, (36, 0))
-    combined = np.array(combined, dtype=np.float64)
-
-    X.append(combined)
-    Y.append(generate_label(image_meta))
-
-Y = np.array(Y)
-
-# take the first 10 examples as validation
-X_test = X[:10]
-Y_test = Y[:10]
-
-X = X[10:]
-Y = Y[10:]
-# Shuffle the data
-X, Y = shuffle(X, Y)
+import time
 
 # Make sure the data is normalized
 img_prep = ImagePreprocessing()
@@ -100,12 +63,46 @@ network = regression(network, optimizer='adam',
 # Wrap the network in a model object
 model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='checkpoints/eye_position.tfl.ckpt')
 
-# Train it! We'll do 100 training passes and monitor it as it goes.
-model.fit(X, Y, n_epoch=100, shuffle=True, validation_set=(X_test, Y_test),
-          show_metric=True, batch_size=50,
-          snapshot_epoch=True,
-          run_id='eye-classifier')
-
 # Save model when training is complete to a file
-model.save("eye_position_classifier.tfl")
-print("Network trained and saved as eye_position_classifier.tfl!")
+model.load("./eye_position_classifier.tfl")
+print("Network loaded from eye_position_classifier.tfl!")
+
+import cv2
+import face_recognition
+from collect_data import resolve_corners
+
+video_capture = cv2.VideoCapture(0)
+video_capture.set(3, 1920)
+video_capture.set(4, 1080)
+print("VideoCapture initialized")
+
+while True:
+    time.sleep(2)
+
+    _, image = video_capture.read()
+
+    face_landmarks_list = face_recognition.face_landmarks(image)
+
+    if len(face_landmarks_list) == 0:
+        continue
+    landmarks = face_landmarks_list[0]
+    if ('left_eye' not in landmarks) or ('right_eye' not in landmarks):
+        continue
+
+    left_bounds = resolve_corners(landmarks['left_eye'])
+    right_bounds = resolve_corners(landmarks['right_eye'])
+
+    #cv2_im = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    pil_im = Image.fromarray(image)
+
+    left_eye = pil_im.crop(left_bounds)
+    right_eye = pil_im.crop(right_bounds)
+
+    combined = Image.new('RGB', (72, 28))
+    combined.paste(left_eye, (0, 0))
+    combined.paste(right_eye, (36, 0))
+    combined = np.array(combined, dtype=np.float64)
+
+    X = np.array([combined])
+
+    print(model.predict(X))
