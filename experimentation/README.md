@@ -13,7 +13,7 @@ Download Python 3.* version of Anaconda for Windows.
 
 2. Install dependencies
 
-    * `conda install --yes -c conda-forge opencv dlib scipy`
+    * `conda install --yes -c conda-forge opencv dlib=19.9 scipy`
 
     * `pip install Pillow "Click>=6.0" pypiwin32`
 
