@@ -77,7 +77,7 @@ video_capture.set(4, 1080)
 print("VideoCapture initialized")
 
 while True:
-    time.sleep(0.5)
+    time.sleep(0.2)
 
     _, image = video_capture.read()
 
@@ -105,4 +105,11 @@ while True:
 
     X = np.array([combined])
 
-    print(model.predict(X))
+    prediction = model.predict(X)
+    result = ""
+    if (prediction[0][0] > prediction[0][1]):
+        result += "Left - "
+    else:
+        result += "Right - "
+    result += repr(prediction)
+    print(result)
