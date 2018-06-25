@@ -88,6 +88,7 @@ while True:
     landmarks = face_landmarks_list[0]
     if ('left_eye' not in landmarks) or ('right_eye' not in landmarks):
         continue
+    print('Processing...', end='', flush=True)
 
     left_bounds = resolve_corners(landmarks['left_eye'])
     right_bounds = resolve_corners(landmarks['right_eye'])
@@ -111,5 +112,5 @@ while True:
         result += "Left - "
     else:
         result += "Right - "
-    result += repr(prediction)
+    result += str(prediction)
     print(result)

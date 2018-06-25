@@ -1,9 +1,10 @@
 # Setting up in Miniconda
 
-Doumenting my attempt to use Miniconda to make grabbing the dependencies
+Documenting my attempt to use Miniconda to make grabbing the dependencies
 easier. https://conda.io/miniconda.html
 
-Download Python 3.* version of Miniconda for Windows.
+Download Python 3.* version of Miniconda for Windows. Run these commands
+in the newly installed "Anaconda Prompt"
 
 1. Set up a virtualenv
 
@@ -21,6 +22,8 @@ Download Python 3.* version of Miniconda for Windows.
 
     * `pip install --no-dependencies face_recognition face_recognition_models`
 
-3. Optionally install GPU accelerated tensorflow
+3. (Optional) Install GPU accelerated tensorflow
     
-    https://www.heatonresearch.com/2017/01/01/tensorflow-windows-gpu.html
+    https://www.tensorflow.org/install/install_windows#requirements_to_run_tensorflow_with_gpu_support
+
+    * `pip install --upgrade tensorflow-gpu`
