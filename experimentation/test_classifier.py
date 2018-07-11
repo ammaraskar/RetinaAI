@@ -69,7 +69,7 @@ print("Network loaded from eye_position_classifier.tfl!")
 
 import cv2
 import face_recognition
-from collect_data import resolve_corners
+from collect_data import resolve_corners, increase_bounds
 
 video_capture = cv2.VideoCapture(0)
 video_capture.set(3, 1920)
@@ -77,21 +77,29 @@ video_capture.set(4, 1080)
 print("VideoCapture initialized")
 
 while True:
-    time.sleep(0.2)
+    time.sleep(0.1)
 
     _, image = video_capture.read()
 
-    face_landmarks_list = face_recognition.face_landmarks(image)
+    print('Processing...', end='', flush=True)
+
+    small_frame = cv2.resize(image, (0, 0), fx=0.5, fy=0.5)
+    face_landmarks_list = face_recognition.face_landmarks(small_frame)
 
     if len(face_landmarks_list) == 0:
         continue
     landmarks = face_landmarks_list[0]
     if ('left_eye' not in landmarks) or ('right_eye' not in landmarks):
         continue
-    print('Processing...', end='', flush=True)
 
     left_bounds = resolve_corners(landmarks['left_eye'])
     right_bounds = resolve_corners(landmarks['right_eye'])
+
+    left_bounds = tuple([point * 2 for point in left_bounds])
+    right_bounds = tuple([point * 2 for point in right_bounds])
+
+    left_bounds = increase_bounds(left_bounds)
+    right_bounds = increase_bounds(right_bounds)
 
     #cv2_im = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pil_im = Image.fromarray(image)

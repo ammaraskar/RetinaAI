@@ -16,7 +16,7 @@ X = []
 Y = []
 
 def generate_label(meta):
-    if int(meta['x']) < (1920 / 2):
+    if int(meta['x']) < 757:
         return [1, 0]
     else:
         return [0, 1]
@@ -101,8 +101,8 @@ network = regression(network, optimizer='adam',
 model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='checkpoints/eye_position.tfl.ckpt')
 
 # Train it! We'll do 100 training passes and monitor it as it goes.
-model.fit(X, Y, n_epoch=200, shuffle=True, validation_set=(X_test, Y_test),
-          show_metric=True, batch_size=50,
+model.fit(X, Y, n_epoch=150, shuffle=True, validation_set=(X_test, Y_test),
+          show_metric=True, batch_size=55,
           snapshot_epoch=True,
           run_id='eye-classifier')
 

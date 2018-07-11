@@ -38,6 +38,9 @@ def process_image(image, image_id, x, y):
     left_bounds = resolve_corners(landmarks['left_eye'])
     right_bounds = resolve_corners(landmarks['right_eye'])
 
+    left_bounds = increase_bounds(left_bounds)
+    right_bounds = increase_bounds(right_bounds)
+
     #cv2_im = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pil_im = Image.fromarray(converted_image)
 
@@ -52,6 +55,18 @@ def process_image(image, image_id, x, y):
     right_eye.save('data/images/{}_right.png'.format(image_id))
     with open('data/images/{}_meta.json'.format(image_id), 'w') as f:
         json.dump(data, f)
+
+def increase_bounds(cords):
+    x_low, y_low, x_high, y_high = cords
+    width = x_high - x_low
+    height = y_high - y_low
+
+    x_low -= (width * 0.15)
+    x_high += (width * 0.15)
+    y_low -= (height * 0.15)
+    y_high += (height * 0.15)
+    
+    return (x_low, y_low, x_high, y_high)
 
 def resolve_corners(cordinate_list):
     xs = [cord[0] for cord in cordinate_list]
