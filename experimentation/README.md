@@ -16,7 +16,7 @@ in the newly installed "Anaconda Prompt"
 
     * `conda install --yes -c conda-forge opencv dlib=19.9 scipy`
 
-    * `pip install Pillow "Click>=6.0" pypiwin32`
+    * `pip install Pillow "Click>=6.0" pypiwin32 PyQt5`
 
     * `pip install --ignore-installed --upgrade tensorflow tflearn`
 

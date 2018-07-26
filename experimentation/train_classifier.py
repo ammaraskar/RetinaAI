@@ -1,9 +1,10 @@
 # Import tflearn and some helpers
 import tflearn
 from tflearn.data_utils import shuffle
-from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.core import input_data, dropout, fully_connected 
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.estimator import regression
+from tflearn.layers.normalization import local_response_normalization
 from tflearn.data_preprocessing import ImagePreprocessing
 from tflearn.data_augmentation import ImageAugmentation
 import glob
@@ -16,10 +17,16 @@ X = []
 Y = []
 
 def generate_label(meta):
-    if int(meta['x']) < 757:
-        return [1, 0]
+    if int(meta['x']) < 750:
+        if int(meta['y']) > 500:
+            return [1, 0, 0, 0]
+        else:
+            return [0, 1, 0, 0]
     else:
-        return [0, 1]
+        if int(meta['y']) > 500:
+            return [0, 0, 1, 0]
+        else:
+            return [0, 0, 0, 1]
 
 # Load in the data
 images = glob.glob('data/images/*.json')
@@ -73,12 +80,13 @@ network = conv_2d(network, 72, 3, activation='relu')
 
 # Step 2: Max pooling
 network = max_pool_2d(network, 2)
+network = local_response_normalization(network)
 
 # Step 3: Convolution again
 network = conv_2d(network, 128, 3, activation='relu')
 
 # Step 4: Convolution yet again
-# network = conv_2d(network, 128, 3, activation='relu')
+network = conv_2d(network, 128, 3, activation='relu')
 
 # Step 5: Max pooling again
 network = max_pool_2d(network, 2)
@@ -87,10 +95,10 @@ network = max_pool_2d(network, 2)
 network = fully_connected(network, 512, activation='relu')
 
 # Step 7: Dropout - throw away some data randomly during training to prevent over-fitting
-network = dropout(network, 0.85)
+network = dropout(network, 0.90)
 
-# Step 8: Fully-connected neural network with two outputs (0=isn't a bird, 1=is a bird) to make the final prediction
-network = fully_connected(network, 2, activation='softmax')
+# Step 8: Fully-connected neural network with four outputs to make the final prediction
+network = fully_connected(network, 4, activation='softmax')
 
 # Tell tflearn how we want to train the network
 network = regression(network, optimizer='adam',
@@ -101,8 +109,8 @@ network = regression(network, optimizer='adam',
 model = tflearn.DNN(network, tensorboard_verbose=0, checkpoint_path='checkpoints/eye_position.tfl.ckpt')
 
 # Train it! We'll do 100 training passes and monitor it as it goes.
-model.fit(X, Y, n_epoch=150, shuffle=True, validation_set=(X_test, Y_test),
-          show_metric=True, batch_size=55,
+model.fit(X, Y, n_epoch=350, shuffle=True, validation_set=(X_test, Y_test),
+          show_metric=True, batch_size=150,
           snapshot_epoch=True,
           run_id='eye-classifier')
 
